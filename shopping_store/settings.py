@@ -37,14 +37,9 @@ DEBUG = env('DEBUG', default=False)
 # ALLOWED_HOSTS configuration
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
-# If ALLOWED_HOSTS is empty, use sensible defaults based on environment
-if not ALLOWED_HOSTS:
-    if DEBUG:
-        # Development: Allow localhost
-        ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-    else:
-        # Production: Allow all .onrender.com domains
-        ALLOWED_HOSTS = ['.onrender.com', 'online-store-qke4.onrender.com']
+# Always allow Render domain and localhost
+if not ALLOWED_HOSTS or len(ALLOWED_HOSTS) == 0:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', 'online-store-qke4.onrender.com']
 
 
 # Application definition
@@ -109,7 +104,12 @@ DATABASE_URL = env('DATABASE_URL', default=None)
 if DATABASE_URL:
     # Production: Use Render PostgreSQL
     DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.parse(
+            DATABASE_URL, 
+            conn_max_age=600, 
+            conn_health_checks=True,
+            ssl_require=False  # Render handles SSL internally
+        )
     }
 else:
     # Local Development: Use local PostgreSQL
