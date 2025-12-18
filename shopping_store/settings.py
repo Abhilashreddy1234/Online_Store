@@ -42,7 +42,6 @@ if not ALLOWED_HOSTS or len(ALLOWED_HOSTS) == 0:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', 'online-store-qke4.onrender.com']
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'admin_interface',
@@ -59,7 +58,11 @@ INSTALLED_APPS = [
     'orders',
     'customers',
     'cart',
+    
 ]
+
+# Channels
+INSTALLED_APPS += ['channels']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -92,7 +95,20 @@ TEMPLATES = [
     },
 ]
 
+
+# Channels ASGI application
+ASGI_APPLICATION = 'shopping_store.asgi.application'
 WSGI_APPLICATION = 'shopping_store.wsgi.application'
+
+# Channels/Redis layer config
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(env('REDIS_HOST', default='127.0.0.1'), int(env('REDIS_PORT', default='6379')))],
+        },
+    },
+}
 
 
 # Database
@@ -205,3 +221,14 @@ SILKY_PYTHON_PROFILER = True
 LOGIN_URL = 'customers:login'
 LOGIN_REDIRECT_URL = 'catalog:home'
 LOGOUT_REDIRECT_URL = 'catalog:home'
+# Email configuration for password reset
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = '20eg110119@anurag.edu.in'
+EMAIL_HOST_PASSWORD = 'rzul fqvr xtzw lwig'
+DEFAULT_FROM_EMAIL = '20eg110119@anurag.edu.in'
+# Password reset email settings
+PASSWORD_RESET_SUBJECT_TEMPLATE = 'Password Reset Requested'
+PASSWORD_RESET_EMAIL_TEMPLATE = 'customers/password_reset_email.html'
